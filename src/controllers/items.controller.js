@@ -11,13 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateItem = exports.getAllItems = exports.getItem = exports.createItem = void 0;
 const itemService = require("../services/items.service");
-const GetItemDto_1 = require("./dto/GetItemDto");
-const bson_1 = require("bson");
+const GetItemRepresentation_1 = require("./representations/GetItemRepresentation");
+//HTTP Method Request handlers
 function createItem(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const newPostItemDto = req.body;
-            const newItem = yield itemService.createItem(newPostItemDto.type, newPostItemDto.name, newPostItemDto.description, newPostItemDto.itemProductionCost);
+            const postItemInput = req.body;
+            const newItem = yield itemService.createItem(postItemInput.type, postItemInput.name, postItemInput.description, postItemInput.itemProductionCost);
             res.status(201).send({ "itemId": newItem.id });
         }
         catch (error) {
@@ -31,12 +31,12 @@ function getItem(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const id = (_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.id;
         try {
-            const item = yield itemService.findItem(new bson_1.ObjectId(id));
+            const item = yield itemService.findItem(id);
             if (item) {
-                res.status(200).send(convertToGetItemDto(item));
+                res.status(200).send(convertItemToGetItemRepresentation(item));
             }
             else {
-                res.status(404);
+                res.status(404).send();
             }
         }
         catch (error) {
@@ -48,7 +48,7 @@ exports.getItem = getItem;
 function getAllItems(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const getItemRepresentations = yield itemService.findAllItems().then((items) => items.map(convertToGetItemDto));
+            const getItemRepresentations = yield itemService.findAllItems().then((items) => items.map(convertItemToGetItemRepresentation));
             res.status(200).send(getItemRepresentations);
         }
         catch (error) {
@@ -58,11 +58,22 @@ function getAllItems(req, res) {
 }
 exports.getAllItems = getAllItems;
 function updateItem(req, res) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        const id = (_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.id;
+        try {
+            const putItemInput = req.body;
+            const updatedItem = yield itemService.updateItem(id, putItemInput.name, putItemInput.description, putItemInput.itemProductionCost);
+            res.status(200).send(convertItemToGetItemRepresentation(updatedItem));
+        }
+        catch (error) {
+            res.status(400).send(error.message);
+        }
     });
 }
 exports.updateItem = updateItem;
+//CONVERSIONS
 //TODO: either send info about number here or change to remember BASE
-function convertToGetItemDto(item) {
-    return new GetItemDto_1.GetItemDto(item.itemType.type, item.itemType.typeDescription, item.name, item.description, item.calculateProductionCost(1));
+function convertItemToGetItemRepresentation(item) {
+    return new GetItemRepresentation_1.GetItemRepresentation(item.id.toString(), item.itemType.type, item.itemType.typeDescription, item.name, item.description, item.calculateProductionCost(1));
 }

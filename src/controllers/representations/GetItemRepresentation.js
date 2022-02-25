@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetItemDto = void 0;
-class GetItemDto {
-    constructor(typeName, typeDescription, name, description, calculatedProductionCost) {
+exports.GetItemRepresentation = void 0;
+class GetItemRepresentation {
+    constructor(itemId, typeName, typeDescription, name, description, calculatedProductionCost) {
+        this.itemId = itemId;
         this.typeName = typeName;
         this.typeDescription = typeDescription;
         this.name = name;
@@ -10,4 +11,4 @@ class GetItemDto {
         this.calculatedProductionCost = calculatedProductionCost;
     }
 }
-exports.GetItemDto = GetItemDto;
+exports.GetItemRepresentation = GetItemRepresentation;

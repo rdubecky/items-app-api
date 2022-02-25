@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Item {
-    constructor(name, description, itemProductionCost) {
+    constructor(name, description, itemProductionCost, id) {
         this._itemBaseCostMinimum = 10.00;
         this._itemBaseCostMaximum = 1000.00;
         this._name = name;
         this._description = description;
         this._itemProductionCost = itemProductionCost;
+        this._id = id;
     }
     calculateProductionCost(totalItemCount) {
         return this.calculateBaseCost(totalItemCount) + this._itemProductionCost;

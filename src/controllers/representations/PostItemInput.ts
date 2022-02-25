@@ -1,6 +1,6 @@
 import {Type} from "../../models/ItemType";
 
-export class PostItemDto {
+export class PostItemInput {
     type: Type;
     name: string;
     description:string;

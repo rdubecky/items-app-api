@@ -9,13 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.countAllItems = exports.createItem = exports.findItem = exports.findAllItems = void 0;
+exports.countAllItems = exports.updateItem = exports.createItem = exports.findItem = exports.findAllItems = void 0;
 const bson_1 = require("bson");
 const database_1 = require("../database/database");
-const DbItem_1 = require("../database/DbItem");
+const DbItem_1 = require("../database/entities/DbItem");
 const ItemFactory_1 = require("../models/ItemFactory");
 const itemBaseCostMinimum = 10.00;
 const itemBaseCostMaximum = 1000.00;
+//CRUD methods
 function findAllItems() {
     return __awaiter(this, void 0, void 0, function* () {
         const dbItems = (yield database_1.collections.items.find({}).toArray());
@@ -25,6 +26,9 @@ function findAllItems() {
 exports.findAllItems = findAllItems;
 function findItem(id) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!bson_1.ObjectId.isValid(id)) {
+            return null;
+        }
         const query = { _id: new bson_1.ObjectId(id) };
         const dbItem = (yield database_1.collections.items.findOne(query));
         if (dbItem) {
@@ -52,17 +56,33 @@ function createItem(type, name, description, itemProductionCost) {
     });
 }
 exports.createItem = createItem;
+function updateItem(id, name, description, itemProductionCost) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!bson_1.ObjectId.isValid(id)) {
+            throw new Error(`Not a valid id: ${id}`);
+        }
+        const searchId = new bson_1.ObjectId(id);
+        const query = { _id: searchId };
+        const result = yield database_1.collections.items.updateOne(query, { $set: { name, description, itemProductionCost } });
+        if (result.modifiedCount === 1) {
+            return findItem(id);
+        }
+        else {
+            throw new Error(`Item ${id} couldn't be updated`);
+        }
+    });
+}
+exports.updateItem = updateItem;
 function countAllItems() {
     return __awaiter(this, void 0, void 0, function* () {
-        const dbItems = (yield database_1.collections.items.find({}).toArray());
-        return dbItems.length;
+        return yield database_1.collections.items.countDocuments();
     });
 }
 exports.countAllItems = countAllItems;
-//TODO: update item
+//CONVERSIONS
 function convertToItem(dbItem) {
-    return ItemFactory_1.default.createItem(dbItem.type, dbItem.name, dbItem.description, dbItem.itemProductionCost);
+    return ItemFactory_1.default.createItem(dbItem.type, dbItem.name, dbItem.description, dbItem.itemProductionCost, dbItem._id);
 }
 function convertToDbItem(item) {
-    return new DbItem_1.default(item.itemType.type, item.name, item.description, item.itemProductionCost);
+    return new DbItem_1.default(item.itemType.type, item.name, item.description, item.itemProductionCost, item.id);
 }

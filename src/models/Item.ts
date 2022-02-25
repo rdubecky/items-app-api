@@ -11,10 +11,11 @@ export default abstract class Item {//TODO: remove these base costs?
     private _baseProductionCost: number;
     private _id: ObjectId;
 
-    constructor(name: string, description: string, itemProductionCost: number) {
+    constructor(name: string, description: string, itemProductionCost: number, id?: ObjectId) {
         this._name = name;
         this._description = description;
         this._itemProductionCost = itemProductionCost;
+        this._id = id;
     }
 
     calculateProductionCost(totalItemCount: number): number {
