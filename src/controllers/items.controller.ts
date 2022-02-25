@@ -4,6 +4,7 @@ import Item from "../models/Item";
 import {GetItemRepresentation} from "./representations/GetItemRepresentation";
 import {PostItemInput} from "./representations/PostItemInput";
 import PutItemInput from "./representations/PutItemInput";
+import {ErrorRepresentation} from "./representations/ErrorRepresentation";
 
 //HTTP Method Request handlers
 export async function createItem(req: Request, res: Response) {
@@ -13,7 +14,7 @@ export async function createItem(req: Request, res: Response) {
             postItemInput.type, postItemInput.name, postItemInput.description, postItemInput.itemProductionCost);
         res.status(201).send({"itemId" : newItem.id});
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(400).send(new ErrorRepresentation(error.message));
     }
 }
 
@@ -27,7 +28,7 @@ export async function getItem(req: Request, res: Response) {
             res.status(404).send();
         }
     } catch (error) {
-        res.status(500).send(error.message);
+        res.status(500).send(new ErrorRepresentation(error.message));
     }
 }
 
@@ -36,7 +37,7 @@ export async function getAllItems(req: Request, res: Response) {
         const getItemRepresentations = await itemService.findAllItems().then((items) => items.map(convertItemToGetItemRepresentation));
         res.status(200).send(getItemRepresentations);
     } catch (error) {
-        res.status(500).send(error.message);
+        res.status(500).send(new ErrorRepresentation(error.message));
     }
 }
 
@@ -48,7 +49,7 @@ export async function updateItem(req: Request, res: Response) {
             id, putItemInput.name, putItemInput.description, putItemInput.itemProductionCost);
         res.status(200).send(convertItemToGetItemRepresentation(updatedItem));
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(400).send(new ErrorRepresentation(error.message));
     }
 }
 

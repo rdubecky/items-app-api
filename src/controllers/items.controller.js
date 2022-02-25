@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateItem = exports.getAllItems = exports.getItem = exports.createItem = void 0;
 const itemService = require("../services/items.service");
 const GetItemRepresentation_1 = require("./representations/GetItemRepresentation");
+const ErrorRepresentation_1 = require("./representations/ErrorRepresentation");
 //HTTP Method Request handlers
 function createItem(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -21,7 +22,7 @@ function createItem(req, res) {
             res.status(201).send({ "itemId": newItem.id });
         }
         catch (error) {
-            res.status(400).send(error.message);
+            res.status(400).send(new ErrorRepresentation_1.ErrorRepresentation(error.message));
         }
     });
 }
@@ -40,7 +41,7 @@ function getItem(req, res) {
             }
         }
         catch (error) {
-            res.status(500).send(error.message);
+            res.status(500).send(new ErrorRepresentation_1.ErrorRepresentation(error.message));
         }
     });
 }
@@ -52,7 +53,7 @@ function getAllItems(req, res) {
             res.status(200).send(getItemRepresentations);
         }
         catch (error) {
-            res.status(500).send(error.message);
+            res.status(500).send(new ErrorRepresentation_1.ErrorRepresentation(error.message));
         }
     });
 }
@@ -67,7 +68,7 @@ function updateItem(req, res) {
             res.status(200).send(convertItemToGetItemRepresentation(updatedItem));
         }
         catch (error) {
-            res.status(400).send(error.message);
+            res.status(400).send(new ErrorRepresentation_1.ErrorRepresentation(error.message));
         }
     });
 }
