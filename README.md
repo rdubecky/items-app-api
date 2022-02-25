@@ -6,4 +6,5 @@ To run, navigate to the project folder
 
 And run
 > npm install
+
 > node src/index.js
