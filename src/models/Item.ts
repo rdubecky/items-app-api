@@ -1,7 +1,7 @@
 import { ObjectId } from "bson";
-import {Type, ItemType} from "./ItemType";
+import {ItemType} from "./ItemType";
 
-export default abstract class Item {//TODO: remove these base costs?
+export default abstract class Item {
     private readonly _itemBaseCostMinimum = 10.00;
     private readonly _itemBaseCostMaximum = 1000.00;
 
@@ -11,22 +11,23 @@ export default abstract class Item {//TODO: remove these base costs?
     private _baseProductionCost: number;
     private _id: ObjectId;
 
-    constructor(name: string, description: string, itemProductionCost: number, id?: ObjectId) {
+    constructor(name: string, description: string, itemProductionCost: number, baseProductionCost?: number, id?: ObjectId) {
         this._name = name;
         this._description = description;
         this._itemProductionCost = itemProductionCost;
+        this._baseProductionCost = baseProductionCost;
         this._id = id;
     }
 
-    calculateProductionCost(totalItemCount: number): number {
-        return this.calculateBaseCost(totalItemCount) + this._itemProductionCost;
+    calculateProductionCost(): number {
+        return this.baseProductionCost + this._itemProductionCost;
     }
 
-    private calculateBaseCost(totalItemCount: number) : number {
-        return this.enforceBaseCostMinMax(this.quoteBaseCost(totalItemCount));
+    setupBaseCost(existingItemsCount: number) {
+        this._baseProductionCost = this.enforceBaseCostMinMax(this.quoteBaseCost(existingItemsCount));
     }
 
-    protected abstract quoteBaseCost(totalItemCount: number): number;
+    protected abstract quoteBaseCost(existingItemsCount: number): number;
 
     private enforceBaseCostMinMax(quotedCost: number): number {
         return Math.min(Math.max(this._itemBaseCostMinimum, quotedCost), this._itemBaseCostMaximum);
@@ -47,6 +48,9 @@ export default abstract class Item {//TODO: remove these base costs?
     }
 
     get baseProductionCost(): number {
+        if(!this._baseProductionCost) {
+            return this.itemType.baseProductionCost; //defaults to itemType's base if setup wasn't done
+        }
         return this._baseProductionCost;
     }
 

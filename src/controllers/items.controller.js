@@ -73,7 +73,6 @@ function updateItem(req, res) {
 }
 exports.updateItem = updateItem;
 //CONVERSIONS
-//TODO: either send info about number here or change to remember BASE
 function convertItemToGetItemRepresentation(item) {
-    return new GetItemRepresentation_1.GetItemRepresentation(item.id.toString(), item.itemType.type, item.itemType.typeDescription, item.name, item.description, item.calculateProductionCost(1));
+    return new GetItemRepresentation_1.GetItemRepresentation(item.id.toString(), item.itemType.type, item.itemType.typeDescription, item.name, item.description, item.calculateProductionCost());
 }

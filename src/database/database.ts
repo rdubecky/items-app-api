@@ -1,5 +1,4 @@
 import * as mongoDB from "mongodb";
-import Item from "../models/Item";
 import DbItem from "./entities/DbItem";
 
 const {MongoMemoryServer} = require('mongodb-memory-server');

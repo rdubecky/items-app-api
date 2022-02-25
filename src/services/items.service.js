@@ -14,8 +14,6 @@ const bson_1 = require("bson");
 const database_1 = require("../database/database");
 const DbItem_1 = require("../database/entities/DbItem");
 const ItemFactory_1 = require("../models/ItemFactory");
-const itemBaseCostMinimum = 10.00;
-const itemBaseCostMaximum = 1000.00;
 //CRUD methods
 function findAllItems() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -32,7 +30,7 @@ function findItem(id) {
         const query = { _id: new bson_1.ObjectId(id) };
         const dbItem = (yield database_1.collections.items.findOne(query));
         if (dbItem) {
-            return convertToItem(dbItem); //TODO: the calculated cost will be returned in controller when necessary
+            return convertToItem(dbItem);
         }
         else {
             return null;
@@ -43,7 +41,7 @@ exports.findItem = findItem;
 function createItem(type, name, description, itemProductionCost) {
     return __awaiter(this, void 0, void 0, function* () {
         const newItem = ItemFactory_1.default.createItem(type, name, description, itemProductionCost);
-        //TODO: maybe here calculate base cost and save it?
+        newItem.setupBaseCost(yield countAllItems());
         const newDbItem = convertToDbItem(newItem);
         const result = yield database_1.collections.items.insertOne(newDbItem);
         if (result) {
@@ -81,8 +79,8 @@ function countAllItems() {
 exports.countAllItems = countAllItems;
 //CONVERSIONS
 function convertToItem(dbItem) {
-    return ItemFactory_1.default.createItem(dbItem.type, dbItem.name, dbItem.description, dbItem.itemProductionCost, dbItem._id);
+    return ItemFactory_1.default.createItem(dbItem.type, dbItem.name, dbItem.description, dbItem.itemProductionCost, dbItem.itemBaseProductionCost, dbItem._id);
 }
 function convertToDbItem(item) {
-    return new DbItem_1.default(item.itemType.type, item.name, item.description, item.itemProductionCost, item.id);
+    return new DbItem_1.default(item.itemType.type, item.name, item.description, item.itemProductionCost, item.baseProductionCost, item.id);
 }

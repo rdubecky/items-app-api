@@ -7,14 +7,14 @@ export default class DbItem {
     name: string;
     description: string;
     itemProductionCost: number;
-    // itemBaseProductionCost: number;
+    itemBaseProductionCost: number;
 
-    constructor(itemType: Type, name: string, description: string, itemProductionCost: number, id?: ObjectId) {
+    constructor(itemType: Type, name: string, description: string, itemProductionCost: number, itemBaseProductionCost: number, id?: ObjectId) {
         this.type = itemType;
         this.name = name;
         this.description = description;
         this.itemProductionCost = itemProductionCost;
-        // this.itemBaseProductionCost = itemBaseProductionCost;
+        this.itemBaseProductionCost = itemBaseProductionCost;
         this._id = id;
     }
 }

@@ -53,8 +53,7 @@ export async function updateItem(req: Request, res: Response) {
 }
 
 //CONVERSIONS
-//TODO: either send info about number here or change to remember BASE
 function convertItemToGetItemRepresentation(item: Item): GetItemRepresentation {
     return new GetItemRepresentation(item.id.toString(), item.itemType.type, item.itemType.typeDescription, item.name,
-        item.description, item.calculateProductionCost(1));
+        item.description, item.calculateProductionCost());
 }

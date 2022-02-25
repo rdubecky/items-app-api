@@ -4,9 +4,6 @@ exports.MechanicalItem = void 0;
 const Item_1 = require("./Item");
 const ItemType_1 = require("./ItemType");
 class MechanicalItem extends Item_1.default {
-    constructor(name, description, itemProductionCost, id) {
-        super(name, description, itemProductionCost, id);
-    }
     get itemType() {
         return ItemType_1.MechanicalItemType;
     }

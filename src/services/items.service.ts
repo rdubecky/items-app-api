@@ -5,9 +5,6 @@ import Item from "../models/Item";
 import ItemFactory from "../models/ItemFactory";
 import {Type} from "../models/ItemType";
 
-const itemBaseCostMinimum = 10.00;
-const itemBaseCostMaximum = 1000.00;
-
 //CRUD methods
 export async function findAllItems() : Promise<Item[]> {
     const dbItems = (await collections.items.find({}).toArray()) as DbItem[];
@@ -22,7 +19,7 @@ export async function findItem(id: string) : Promise<Item> {
     const dbItem = (await collections.items.findOne(query)) as DbItem;
 
     if (dbItem) {
-        return convertToItem(dbItem); //TODO: the calculated cost will be returned in controller when necessary
+        return convertToItem(dbItem);
     } else {
         return null;
     }
@@ -30,7 +27,8 @@ export async function findItem(id: string) : Promise<Item> {
 
 export async function createItem(type: Type, name: string, description: string, itemProductionCost: number): Promise<Item> {
      const newItem = ItemFactory.createItem(type, name, description, itemProductionCost);
-     //TODO: maybe here calculate base cost and save it?
+     newItem.setupBaseCost(await countAllItems());
+
      const newDbItem = convertToDbItem(newItem);
      const result = await collections.items.insertOne(newDbItem);
 
@@ -63,9 +61,9 @@ export async function countAllItems() : Promise<number> {
 
 //CONVERSIONS
 function convertToItem(dbItem: DbItem): Item {
-    return ItemFactory.createItem(dbItem.type, dbItem.name, dbItem.description, dbItem.itemProductionCost, dbItem._id);
+    return ItemFactory.createItem(dbItem.type, dbItem.name, dbItem.description, dbItem.itemProductionCost, dbItem.itemBaseProductionCost, dbItem._id);
 }
 
 function convertToDbItem(item: Item): DbItem {
-    return new DbItem(item.itemType.type, item.name, item.description, item.itemProductionCost, item.id);
+    return new DbItem(item.itemType.type, item.name, item.description, item.itemProductionCost, item.baseProductionCost, item.id);
 }
