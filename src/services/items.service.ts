@@ -26,24 +26,26 @@ export async function findItem(id: string) : Promise<Item> {
 }
 
 export async function createItem(type: Type, name: string, description: string, itemProductionCost: number): Promise<Item> {
-     const newItem = ItemFactory.createItem(type, name, description, itemProductionCost);
-     newItem.setupBaseCost(await countAllItems());
+    validateItemProductionCost(itemProductionCost);
 
-     const newDbItem = convertToDbItem(newItem);
-     const result = await collections.items.insertOne(newDbItem);
+    const newItem = ItemFactory.createItem(type, name, description, itemProductionCost);
+    newItem.setupBaseCost(await countAllItems());
 
-     if(result) {
-         newItem.id = result.insertedId;
-         return newItem;
-     } else {
-         throw new Error("Failed to create new item");
-     }
+    const newDbItem = convertToDbItem(newItem);
+    const result = await collections.items.insertOne(newDbItem);
+
+    if(result) {
+        newItem.id = result.insertedId;
+        return newItem;
+    } else {
+        throw new Error("Failed to create new item");
+    }
 }
 
 export async function updateItem(id: string, name: string, description: string, itemProductionCost: number): Promise<Item> {
-    if (!ObjectId.isValid(id)) {
-        throw new Error(`Not a valid id: ${id}`);
-    }
+    validateIfValidId(id);
+    validateItemProductionCost(itemProductionCost);
+
     const searchId = new ObjectId(id);
     const query = { _id: searchId };
     const result = await collections.items.updateOne(query, { $set: {name, description, itemProductionCost} });
@@ -66,4 +68,17 @@ function convertToItem(dbItem: DbItem): Item {
 
 function convertToDbItem(item: Item): DbItem {
     return new DbItem(item.itemType.type, item.name, item.description, item.itemProductionCost, item.baseProductionCost, item.id);
+}
+
+//VALIDATIONS
+function validateItemProductionCost(cost: number) {
+    if (cost < 0) {
+        throw new Error("Item Production Cost is invalid");
+    }
+}
+
+function validateIfValidId(id: string) {
+    if (!ObjectId.isValid(id)) {
+        throw new Error(`Not a valid id: ${id}`);
+    }
 }

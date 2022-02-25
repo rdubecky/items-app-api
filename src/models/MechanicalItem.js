@@ -7,9 +7,9 @@ class MechanicalItem extends Item_1.default {
     get itemType() {
         return ItemType_1.MechanicalItemType;
     }
-    quoteBaseCost(totalItemCount) {
-        //baseProductionCost doubles after every 5 items => base * 2^((items - 1) div 5)
-        let exponent = totalItemCount > 0 ? Math.floor((totalItemCount - 1) / 5) : 0;
+    quoteBaseCost(existingItemsCount) {
+        //baseProductionCost doubles after every 5 items => base * 2^((items) div 5)
+        let exponent = existingItemsCount >= 0 ? Math.floor((existingItemsCount) / 5) : 0;
         return this.itemType.baseProductionCost * Math.pow(2, (exponent));
     }
 }

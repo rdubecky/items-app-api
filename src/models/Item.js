@@ -13,8 +13,8 @@ class Item {
     calculateProductionCost() {
         return this.baseProductionCost + this._itemProductionCost;
     }
-    setupBaseCost(totalItemCount) {
-        this._baseProductionCost = this.enforceBaseCostMinMax(this.quoteBaseCost(totalItemCount));
+    setupBaseCost(existingItemsCount) {
+        this._baseProductionCost = this.enforceBaseCostMinMax(this.quoteBaseCost(existingItemsCount));
     }
     enforceBaseCostMinMax(quotedCost) {
         return Math.min(Math.max(this._itemBaseCostMinimum, quotedCost), this._itemBaseCostMaximum);

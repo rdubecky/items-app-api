@@ -40,6 +40,7 @@ function findItem(id) {
 exports.findItem = findItem;
 function createItem(type, name, description, itemProductionCost) {
     return __awaiter(this, void 0, void 0, function* () {
+        validateItemProductionCost(itemProductionCost);
         const newItem = ItemFactory_1.default.createItem(type, name, description, itemProductionCost);
         newItem.setupBaseCost(yield countAllItems());
         const newDbItem = convertToDbItem(newItem);
@@ -56,9 +57,8 @@ function createItem(type, name, description, itemProductionCost) {
 exports.createItem = createItem;
 function updateItem(id, name, description, itemProductionCost) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!bson_1.ObjectId.isValid(id)) {
-            throw new Error(`Not a valid id: ${id}`);
-        }
+        validateIfValidId(id);
+        validateItemProductionCost(itemProductionCost);
         const searchId = new bson_1.ObjectId(id);
         const query = { _id: searchId };
         const result = yield database_1.collections.items.updateOne(query, { $set: { name, description, itemProductionCost } });
@@ -83,4 +83,15 @@ function convertToItem(dbItem) {
 }
 function convertToDbItem(item) {
     return new DbItem_1.default(item.itemType.type, item.name, item.description, item.itemProductionCost, item.baseProductionCost, item.id);
+}
+//VALIDATIONS
+function validateItemProductionCost(cost) {
+    if (cost < 0) {
+        throw new Error("Item Production Cost is invalid");
+    }
+}
+function validateIfValidId(id) {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new Error(`Not a valid id: ${id}`);
+    }
 }
